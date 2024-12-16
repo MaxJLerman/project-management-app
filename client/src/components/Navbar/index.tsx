@@ -1,9 +1,25 @@
-import { Search, Settings } from "lucide-react";
-
-import { Input } from "@/components/ui/input";
+import { MenuIcon, Moon, Search, Settings, Sun } from "lucide-react";
 import Link from "next/link";
 
+import { Input } from "@/components/ui/input";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  setIsDarkMode,
+  setIsSidebarCollapsed,
+} from "@/redux/reducers/global.reducer";
+import { cn } from "@/lib/utils";
+
 export const Navbar = () => {
+  const dispatch = useAppDispatch();
+  const { isSidebarCollapsed, isDarkMode } = useAppSelector(
+    (state) => state.global,
+  );
+
+  const handleToggleSidebar = () =>
+    dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
+
+  const handleToggleDarkMode = () => dispatch(setIsDarkMode(!isDarkMode));
+
   return (
     <div
       className={
@@ -14,6 +30,11 @@ export const Navbar = () => {
         //* Search
       }
       <div className={"flex items-center gap-8"}>
+        {!isSidebarCollapsed ? null : (
+          <button onClick={handleToggleSidebar}>
+            <MenuIcon className={"h-8 w-8 dark:text-white"} />
+          </button>
+        )}
         <div className={"relative flex h-min w-[200px]"}>
           <Search
             className={
@@ -34,9 +55,25 @@ export const Navbar = () => {
         //* Icons
       }
       <div className={"flex items-center"}>
+        <button
+          onClick={handleToggleDarkMode}
+          className={cn("rounded p-2", {
+            ["dark:hover:bg-gray-700"]: isDarkMode,
+            ["hover:bg-gray-100"]: !isDarkMode,
+          })}
+        >
+          {isDarkMode ? (
+            <Sun className={"h-6 w-6 cursor-pointer dark:text-white"} />
+          ) : (
+            <Moon className={"h-6 w-6 cursor-pointer dark:text-white"} />
+          )}
+        </button>
         <Link
           href={"/settings"}
-          className={"h-min w-min rounded p-2 hover:bg-gray-100"}
+          className={cn("h-min w-min rounded p-2", {
+            ["dark:hover:bg-gray-700"]: isDarkMode,
+            ["hover:bg-gray-100"]: !isDarkMode,
+          })}
         >
           <Settings className={"h-6 w-6 cursor-pointer dark:text-white"} />
         </Link>
