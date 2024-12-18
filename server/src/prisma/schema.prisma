@@ -12,3 +12,27 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  userId    Int     @id @default(autoincrement())
+  cognitoId String  @unique
+  username  String  @unique
+  image     String?
+  teamId    Int?
+
+  authoredTasks  Task[]           @relation("TaskAuthor")
+  assignedTasks  Task[]           @relation("TaskAssignee")
+  taskAssignment TaskAssignment[]
+  attachments    Attachment[]
+  comments       Comment[]
+  team           Team?            @relation(fields: [teamId], references: [id])
+}
+
+model Team {
+  id                   Int           @id @default(autoincrement())
+  teamName             String
+  productOwnerUserId   Int?
+  productManagerUserId Int?
+  projectTeams         ProjectTeam[]
+  user                 User
+}
